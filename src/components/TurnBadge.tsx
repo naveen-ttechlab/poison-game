@@ -4,8 +4,8 @@ import { useGame } from '../context/GameContext';
  * "ROUND" in the header was too easy to miss, so whose turn it is now shows right
  * where the eye already goes (the one lit thing in the room). */
 export function TurnBadge() {
-  const { state } = useGame();
-  const isPlayerTurn = state.currentPlayer === 'player';
+  const { state, myRole } = useGame();
+  const isPlayerTurn = state.currentPlayer === myRole;
 
   return (
     <div className={`turn-badge${isPlayerTurn ? ' turn-badge-player' : ' turn-badge-opponent'}`}>

@@ -10,11 +10,16 @@ import { ActionPanel } from './components/ActionPanel';
 import { DrinkDialog } from './components/DrinkDialog';
 import { GameOver } from './components/GameOver';
 import { RoundTransition } from './components/RoundTransition';
+import { ModeSelect } from './components/ModeSelect';
+import { HostLobby, GuestLobby } from './components/MultiplayerLobby';
+import { generateRoomCode } from './multiplayer/roomCode';
+import { useHostSocket } from './multiplayer/useHostSocket';
+import { useGuestSocket } from './multiplayer/useGuestSocket';
 import { audioManager } from './audio/audioManager';
 import './App.css';
 
-function GameRoot() {
-  const { state, dispatch } = useGame();
+function GameRoot({ disableBot = false }: { disableBot?: boolean }) {
+  const { state, dispatch, myRole } = useGame();
   const [poisonFlash, setPoisonFlash] = useState(false);
   const [shake, setShake] = useState(false);
   const [audioReady, setAudioReady] = useState(false);
@@ -36,7 +41,7 @@ function GameRoot() {
         window.setTimeout(() => setShake(false), 400);
       }
 
-      const who = info.drinker === 'player' ? 'You' : 'Opponent';
+      const who = info.drinker === myRole ? 'You' : 'Opponent';
       const variant: 'poison' | 'saved' | 'safe' = !info.wasPoison
         ? 'safe'
         : info.survivedByAntidote
@@ -52,17 +57,22 @@ function GameRoot() {
       if (announcementTimer.current) window.clearTimeout(announcementTimer.current);
       announcementTimer.current = window.setTimeout(() => setAnnouncement(null), 2200);
     },
-    [],
+    [myRole],
   );
 
+  // The bot only ever plays the seat the local human isn't sitting in — and only
+  // exists at all in single-player. In multiplayer that seat is a real person on
+  // the other end of the network connection, so this must stay off entirely.
   useEffect(() => {
-    if (state.currentPlayer === 'ai' && state.phase === 'awaiting_action') {
+    if (disableBot) return;
+    const botRole = myRole === 'player' ? 'ai' : 'player';
+    if (state.currentPlayer === botRole && state.phase === 'awaiting_action') {
       aiTimer.current = window.setTimeout(() => dispatch({ kind: 'ai_turn' }), 900);
       return () => {
         if (aiTimer.current) window.clearTimeout(aiTimer.current);
       };
     }
-  }, [state.currentPlayer, state.phase, state.turnCount, dispatch]);
+  }, [disableBot, myRole, state.currentPlayer, state.phase, state.turnCount, dispatch]);
 
   const enableAudio = () => {
     if (!audioReady) {
@@ -98,7 +108,68 @@ function GameRoot() {
   );
 }
 
+/** Lives inside the host's own GameProvider so it can read the live state and
+ * dispatch — broadcasts state to the guest after every change, and applies
+ * whatever actions arrive from the guest through the real (local) reducer. */
+function HostBridge({ roomCode, onExit }: { roomCode: string; onExit: () => void }) {
+  const { state, dispatch } = useGame();
+  const { status, guestConnected, sendState } = useHostSocket(roomCode, dispatch);
+
+  useEffect(() => {
+    if (guestConnected) sendState(state);
+  }, [state, guestConnected, sendState]);
+
+  if (!guestConnected) return <HostLobby roomCode={roomCode} status={status} onCancel={onExit} />;
+  return <GameRoot disableBot />;
+}
+
+function HostGame({ roomCode, onExit }: { roomCode: string; onExit: () => void }) {
+  return (
+    <GameProvider myRole="player">
+      <HostBridge roomCode={roomCode} onExit={onExit} />
+    </GameProvider>
+  );
+}
+
+/** The guest never runs the game engine — it only mirrors whatever state the
+ * host broadcasts and ships its own actions back for the host to apply. */
+function GuestGame({ roomCode, onExit }: { roomCode: string; onExit: () => void }) {
+  const { status, remoteState, sendAction } = useGuestSocket(roomCode);
+
+  if (!remoteState) return <GuestLobby status={status} onCancel={onExit} />;
+  return (
+    <GameProvider myRole="ai" state={remoteState} dispatch={sendAction}>
+      <GameRoot disableBot />
+    </GameProvider>
+  );
+}
+
+type Mode = 'select' | 'single' | 'host' | 'guest';
+
+// A shared link looks like "...?join=ABCDE" — landing on one skips straight to
+// the guest flow instead of the mode-select screen.
+function joinCodeFromUrl(): string | null {
+  return new URLSearchParams(window.location.search).get('join');
+}
+
 export default function App() {
+  const [mode, setMode] = useState<Mode>(() => (joinCodeFromUrl() ? 'guest' : 'select'));
+  const [roomCode, setRoomCode] = useState(() => joinCodeFromUrl()?.toUpperCase() ?? '');
+
+  const startMultiplayer = () => {
+    setRoomCode(generateRoomCode());
+    setMode('host');
+  };
+
+  const exitToSelect = () => {
+    setMode('select');
+    window.history.replaceState({}, '', window.location.pathname);
+  };
+
+  if (mode === 'select') return <ModeSelect onSinglePlayer={() => setMode('single')} onMultiplayer={startMultiplayer} />;
+  if (mode === 'host') return <HostGame roomCode={roomCode} onExit={exitToSelect} />;
+  if (mode === 'guest') return <GuestGame roomCode={roomCode} onExit={exitToSelect} />;
+
   return (
     <GameProvider>
       <GameRoot />

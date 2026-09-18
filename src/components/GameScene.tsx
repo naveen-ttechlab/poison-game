@@ -59,7 +59,7 @@ interface SceneContentProps {
 }
 
 function SceneContent({ onRevealMoment }: SceneContentProps) {
-  const { state, dispatch } = useGame();
+  const { state, dispatch, myRole } = useGame();
   const [hoveredCupId, setHoveredCupId] = useState<string | null>(null);
   const [drinkStage, setDrinkStage] = useState<DrinkStage>('idle');
   const timers = useRef<number[]>([]);
@@ -88,7 +88,7 @@ function SceneContent({ onRevealMoment }: SceneContentProps) {
         // (and it wasn't blocked by an antidote), not whenever poison shows up
         // anywhere in the game.
         const survivedByAntidote = state.lastDrinkResult?.survivedByAntidote ?? false;
-        const hitsPlayer = wasPoison && drinker === 'player' && !survivedByAntidote;
+        const hitsPlayer = wasPoison && drinker === myRole && !survivedByAntidote;
         onRevealMoment({ wasPoison, hitsPlayer, survivedByAntidote, drinker });
         if (wasPoison) audioManager.poison();
         else audioManager.safe();
@@ -113,15 +113,15 @@ function SceneContent({ onRevealMoment }: SceneContentProps) {
       if (!cup.isRevealed && !state.pendingTargets.includes(cup.id)) targetableCupIds.add(cup.id);
     }
   }
-  const canInteract = state.currentPlayer === 'player' && (state.phase === 'awaiting_action' || state.phase === 'awaiting_targets');
+  const canInteract = state.currentPlayer === myRole && (state.phase === 'awaiting_action' || state.phase === 'awaiting_targets');
 
   const handleClick = (cupId: string) => {
     if (!canInteract) return;
     audioManager.cupSelect();
     if (state.phase === 'awaiting_action') {
-      dispatch({ kind: 'select_drink_cup', player: 'player', cupId });
+      dispatch({ kind: 'select_drink_cup', player: myRole, cupId });
     } else {
-      dispatch({ kind: 'target_cup', player: 'player', cupId });
+      dispatch({ kind: 'target_cup', player: myRole, cupId });
     }
   };
 

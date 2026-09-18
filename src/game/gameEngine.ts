@@ -148,7 +148,7 @@ function resolveTool(state: GameState, player: PlayerId, toolType: NonNullable<G
       clues: [...next.clues, fact],
       playerKnowledge: { ...next.playerKnowledge, [player]: { facts: [...next.playerKnowledge[player].facts, fact] } },
     };
-    next = pushEvent(next, player, 'tool_use', `${player === 'player' ? 'You' : 'The opponent'} used the Poison Detector.`, true);
+    next = pushEvent(next, player, 'tool_use', 'used the Poison Detector.', true);
   } else if (toolType === 'spoon') {
     const fact = { ...resolveSpoon(next.cups, targets[0], targets[1], next.round), revealedTo: [player] as PlayerId[] };
     next = {
@@ -156,9 +156,9 @@ function resolveTool(state: GameState, player: PlayerId, toolType: NonNullable<G
       clues: [...next.clues, fact],
       playerKnowledge: { ...next.playerKnowledge, [player]: { facts: [...next.playerKnowledge[player].facts, fact] } },
     };
-    next = pushEvent(next, player, 'tool_use', `${player === 'player' ? 'You' : 'The opponent'} used the Spoon.`, true);
+    next = pushEvent(next, player, 'tool_use', 'used the Spoon.', true);
   } else if (toolType === 'skip') {
-    next = pushEvent(next, player, 'tool_use', `${player === 'player' ? 'You' : 'The opponent'} skipped the turn.`);
+    next = pushEvent(next, player, 'tool_use', 'skipped the turn.');
     // Unlike Detector/Spoon, Skip ends the turn outright instead of returning
     // control to the same player — it's the escape valve from the "must drink"
     // rule, not a free investigative sub-action.
@@ -241,12 +241,15 @@ function handleDrinkAnimationDone(state: GameState): GameState {
     players = { ...players, [drinker]: { ...players[drinker], hp: players[drinker].hp - 1 } };
   }
 
-  const who = drinker === 'player' ? 'You' : 'The opponent';
+  // Deliberately no "You"/"the opponent" baked in here — this same event is
+  // shared verbatim with both sides of a multiplayer match, and which of the two
+  // players "you" refers to depends on who's reading it. The viewer-relative
+  // subject is added at render time instead (see ClueLog).
   const resultText = wasPoison
     ? survivedByAntidote
-      ? `${who} drank Cup ${cup.displayNumber} — POISON, but the antidote saved ${drinker === 'player' ? 'you' : 'them'}.`
-      : `${who} drank Cup ${cup.displayNumber} — POISON.`
-    : `${who} drank Cup ${cup.displayNumber} — safe.`;
+      ? `drank Cup ${cup.displayNumber} — POISON, saved by the antidote.`
+      : `drank Cup ${cup.displayNumber} — POISON.`
+    : `drank Cup ${cup.displayNumber} — safe.`;
 
   let next: GameState = { ...state, cups, players };
   next = pushEvent(next, drinker, 'reveal', resultText);

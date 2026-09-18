@@ -514,3 +514,38 @@
   font-size: 14px;
   line-height: 1.6;
 }
+
+.mode-select-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mode-select-hint {
+  max-width: 340px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.lobby-link {
+  font-family: 'Courier New', monospace;
+  font-size: 15px;
+  color: #f0e6d2;
+  background: rgba(201, 162, 74, 0.1);
+  border: 1px solid rgba(201, 162, 74, 0.4);
+  border-radius: 6px;
+  padding: 10px 16px;
+  max-width: 90vw;
+  word-break: break-all;
+}
+
+.lobby-warning {
+  color: #d8a24a;
+  max-width: 380px;
+}
+
+.lobby-status {
+  font-size: 12px;
+  opacity: 0.75;
+}

@@ -5,8 +5,8 @@ import { audioManager } from '../audio/audioManager';
 /** Tool-targeting hint — a floating corner card (next to Your Tools), not a bottom
  * bar, so it doesn't get lost off in a part of the screen nobody's looking at. */
 export function ActionPanel() {
-  const { state, dispatch } = useGame();
-  const isPlayerTurn = state.currentPlayer === 'player';
+  const { state, dispatch, myRole } = useGame();
+  const isPlayerTurn = state.currentPlayer === myRole;
 
   // Nothing to prompt while it's the opponent's turn, while it's the player's turn
   // but nothing is pending yet (clicking a cup opens the drink dialog directly),
@@ -36,7 +36,7 @@ export function ActionPanel() {
         className="action-btn action-btn-secondary targeting-hint-cancel"
         onClick={() => {
           audioManager.click();
-          dispatch({ kind: 'cancel', player: 'player' });
+          dispatch({ kind: 'cancel', player: myRole });
         }}
       >
         Cancel

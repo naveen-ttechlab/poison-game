@@ -8,9 +8,9 @@ import { audioManager } from '../audio/audioManager';
  * this game is about extracting information through play, not reading it off a
  * HUD panel that isn't yours. */
 export function Inventory() {
-  const { state, dispatch } = useGame();
-  const player = state.players.player;
-  const isPlayerTurn = state.currentPlayer === 'player';
+  const { state, dispatch, myRole } = useGame();
+  const player = state.players[myRole];
+  const isPlayerTurn = state.currentPlayer === myRole;
   const canAct = isPlayerTurn && state.phase === 'awaiting_action';
   // Antidote isn't a targeted action like the others — it's armed/disarmed here,
   // and stays toggleable even once the drink dialog is open (no control for it
@@ -38,7 +38,7 @@ export function Inventory() {
                 onClick={() => {
                   if (!canToggleAntidote) return;
                   audioManager.click();
-                  dispatch({ kind: 'toggle_antidote', player: 'player' });
+                  dispatch({ kind: 'toggle_antidote', player: myRole });
                 }}
               >
                 <span className="tool-icon">{def.icon}</span>
@@ -61,7 +61,7 @@ export function Inventory() {
               onClick={() => {
                 if (!usable) return;
                 audioManager.click();
-                dispatch({ kind: 'select_tool', player: 'player', toolInstanceId: tool.instanceId });
+                dispatch({ kind: 'select_tool', player: myRole, toolInstanceId: tool.instanceId });
               }}
             >
               <span className="tool-icon">{def.icon}</span>

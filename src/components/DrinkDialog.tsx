@@ -6,8 +6,8 @@ import { audioManager } from '../audio/audioManager';
  * Antidote isn't chosen here — it's armed from the Your Tools panel beforehand;
  * this dialog just shows whether it's currently armed. */
 export function DrinkDialog() {
-  const { state, dispatch } = useGame();
-  const isPlayerTurn = state.currentPlayer === 'player';
+  const { state, dispatch, myRole } = useGame();
+  const isPlayerTurn = state.currentPlayer === myRole;
 
   if (!isPlayerTurn || state.phase !== 'confirm_drink' || !state.pendingDrinkCupId) return null;
 
@@ -28,7 +28,7 @@ export function DrinkDialog() {
             className="action-btn action-btn-drink"
             onClick={() => {
               audioManager.click();
-              dispatch({ kind: 'confirm_drink', player: 'player' });
+              dispatch({ kind: 'confirm_drink', player: myRole });
             }}
           >
             Drink
@@ -38,7 +38,7 @@ export function DrinkDialog() {
             className="action-btn action-btn-secondary"
             onClick={() => {
               audioManager.click();
-              dispatch({ kind: 'cancel', player: 'player' });
+              dispatch({ kind: 'cancel', player: myRole });
             }}
           >
             Cancel

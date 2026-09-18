@@ -3,8 +3,8 @@ import { useGame } from '../context/GameContext';
 import { audioManager } from '../audio/audioManager';
 
 export function GameOver() {
-  const { state, dispatch } = useGame();
-  const won = state.winner === 'player';
+  const { state, dispatch, myRole } = useGame();
+  const won = state.winner === myRole;
 
   useEffect(() => {
     if (won) audioManager.victory();

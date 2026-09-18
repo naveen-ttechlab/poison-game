@@ -14,19 +14,20 @@ function HeartRow({ hp }: { hp: number }) {
 }
 
 export function GameHeader() {
-  const { state } = useGame();
+  const { state, myRole } = useGame();
+  const opponentRole = myRole === 'player' ? 'ai' : 'player';
   return (
     <header className="game-header">
       <div className="header-side">
         <div className="player-name">The Opponent</div>
-        <HeartRow hp={state.players.ai.hp} />
+        <HeartRow hp={state.players[opponentRole].hp} />
       </div>
       <div className="header-center">
         <div className="round-label">ROUND {state.round}</div>
       </div>
       <div className="header-side header-side-right">
         <div className="player-name">You</div>
-        <HeartRow hp={state.players.player.hp} />
+        <HeartRow hp={state.players[myRole].hp} />
       </div>
     </header>
   );

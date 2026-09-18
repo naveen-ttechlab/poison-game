@@ -9,8 +9,8 @@ const SOURCE_ICON: Record<string, string> = {
 /** The player's own deduced facts — shown as its own panel under "Your Tools" in
  * the corner, separate from the public Events log on the other side. */
 export function YourClues() {
-  const { state } = useGame();
-  const facts = [...state.playerKnowledge.player.facts].reverse();
+  const { state, myRole } = useGame();
+  const facts = [...state.playerKnowledge[myRole].facts].reverse();
 
   return (
     <div className="clue-log-section clue-log-section-clues corner-clues">
