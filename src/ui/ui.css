@@ -1,0 +1,257 @@
+.app-root {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #d8d0c0;
+  overflow: hidden;
+}
+
+.canvas-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.hud-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 28px;
+}
+
+.objective-box {
+  max-width: 420px;
+  background: rgba(10, 8, 8, 0.55);
+  border-left: 3px solid #6a1414;
+  padding: 10px 14px;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+}
+
+.objective-label {
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #9a3a3a;
+  margin-bottom: 4px;
+}
+
+.inventory-row {
+  display: flex;
+  gap: 8px;
+}
+
+.inventory-slot {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #4a3a2a;
+  background: rgba(10, 8, 8, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+
+.inventory-slot.filled {
+  border-color: #9a3a3a;
+  box-shadow: 0 0 8px rgba(154, 58, 58, 0.5);
+}
+
+.inventory-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+.hud-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 26px;
+  gap: 10px;
+}
+
+.interact-prompt {
+  background: rgba(10, 8, 8, 0.7);
+  border: 1px solid #4a3a2a;
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 3px;
+  letter-spacing: 0.3px;
+}
+
+.stamina-bar-wrap {
+  width: 220px;
+  height: 8px;
+  background: rgba(20, 16, 14, 0.7);
+  border: 1px solid #3a2e26;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.stamina-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6a1414, #b04a2a);
+  transition: width 0.08s linear;
+}
+
+.crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px;
+  border-radius: 50%;
+  background: rgba(220, 210, 190, 0.65);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.vignette-danger {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(120, 10, 10, 0) 30%, rgba(120, 10, 10, 0.55) 100%);
+  transition: opacity 0.2s ease;
+}
+
+.click-prompt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  font-size: 20px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-align: center;
+  padding: 20px;
+}
+
+.overlay-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 2, 2, 0.88);
+  text-align: center;
+  gap: 22px;
+}
+
+.overlay-title {
+  font-size: 52px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.overlay-title.victory {
+  color: #c9a24a;
+  text-shadow: 0 0 24px rgba(201, 162, 74, 0.5);
+}
+
+.overlay-title.defeat {
+  color: #8a1f1f;
+  text-shadow: 0 0 24px rgba(138, 31, 31, 0.6);
+}
+
+.overlay-subtitle {
+  font-size: 15px;
+  color: #a89a88;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.menu-btn {
+  font-family: inherit;
+  font-size: 16px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid #6a1414;
+  color: #d8d0c0;
+  padding: 12px 30px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.menu-btn:hover {
+  background: #6a1414;
+  color: #fff;
+}
+
+.start-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, #14100c 0%, #030202 100%);
+  gap: 26px;
+  text-align: center;
+}
+
+.start-title {
+  font-size: 46px;
+  letter-spacing: 3px;
+  color: #c9b89a;
+  text-shadow: 0 0 30px rgba(120, 20, 20, 0.4);
+}
+
+.start-subtitle {
+  color: #7a6a58;
+  max-width: 480px;
+  font-size: 14px;
+  line-height: 1.7;
+  padding: 0 20px;
+}
+
+.controls-hint {
+  font-size: 12px;
+  color: #5a4e42;
+  letter-spacing: 0.5px;
+  line-height: 1.8;
+}
+
+.ritual-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: rgba(60, 5, 5, 0.15);
+}
+
+.ritual-text {
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: #c9a24a;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(201, 162, 74, 0.6);
+  animation: pulseText 1.6s ease-in-out infinite;
+}
+
+@keyframes pulseText {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
