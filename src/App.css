@@ -1,0 +1,515 @@
+.app-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #0c0a10;
+  color: #d8cfc0;
+  overflow: hidden;
+}
+
+.app-shake {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6px, 3px); }
+  40% { transform: translate(5px, -4px); }
+  60% { transform: translate(-4px, 4px); }
+  80% { transform: translate(6px, -2px); }
+}
+
+.poison-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: radial-gradient(ellipse at center, rgba(150, 10, 30, 0) 40%, rgba(150, 10, 30, 0.5) 100%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.poison-vignette-active {
+  opacity: 1;
+}
+
+.reveal-announcement {
+  position: fixed;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  padding: 0.65em 1.4em;
+  border-radius: 0.6em;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+  pointer-events: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  animation: revealAnnouncementPop 2.6s ease forwards;
+}
+
+.reveal-announcement-poison {
+  background: rgba(150, 10, 30, 0.92);
+  color: #ffe9df;
+  border: 1px solid rgba(255, 140, 140, 0.6);
+}
+
+.reveal-announcement-saved {
+  background: rgba(150, 100, 10, 0.92);
+  color: #fff3d6;
+  border: 1px solid rgba(255, 210, 120, 0.6);
+}
+
+.reveal-announcement-safe {
+  background: rgba(20, 90, 70, 0.92);
+  color: #e3fff2;
+  border: 1px solid rgba(140, 255, 210, 0.6);
+}
+
+@keyframes revealAnnouncementPop {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.9); }
+  10% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.05); }
+  16% { transform: translateX(-50%) translateY(0) scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(0.98); }
+}
+
+/* Header */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px;
+  background: linear-gradient(180deg, #16121a, #0c0a10);
+  border-bottom: 1px solid #2a2233;
+  flex-shrink: 0;
+}
+
+.header-side {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+
+.header-side-right {
+  align-items: flex-end;
+}
+
+.player-name {
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9a8ca8;
+}
+
+.heart-row {
+  display: flex;
+  gap: 4px;
+  font-size: 20px;
+}
+
+.heart-full {
+  color: #b8264a;
+  text-shadow: 0 0 8px rgba(184, 38, 74, 0.6);
+}
+
+.heart-empty {
+  color: #3a2e38;
+}
+
+.header-center {
+  text-align: center;
+}
+
+.round-label {
+  font-size: 15px;
+  letter-spacing: 3px;
+  color: #c9a24a;
+}
+
+/* Turn badge — floats near the hanging lamp in the 3D scene, not tucked under the
+   round counter where it went unnoticed. */
+.turn-badge {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 7px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.turn-badge-player {
+  background: rgba(201, 162, 74, 0.18);
+  border: 1px solid #c9a24a;
+  color: #f0d9a0;
+  box-shadow: 0 0 16px rgba(201, 162, 74, 0.5);
+  animation: turnBadgePulse 2s ease-in-out infinite;
+}
+
+.turn-badge-opponent {
+  background: rgba(184, 38, 74, 0.12);
+  border: 1px solid rgba(184, 38, 74, 0.5);
+  color: #c98a9a;
+}
+
+@keyframes turnBadgePulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(201, 162, 74, 0.35); }
+  50% { box-shadow: 0 0 20px rgba(201, 162, 74, 0.65); }
+}
+
+/* The 3D scene fills the full remaining width/height — Events and the tool/clue
+   stack float on top of it as corner overlays instead of squeezing it narrower. */
+.scene-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+/* Top-left corner stack: Your Tools, then Your Clues underneath */
+.corner-stack {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 190px;
+}
+
+.inventory-corner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: rgba(10, 8, 14, 0.55);
+  border: 1px solid #2a2233;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+}
+
+.corner-clues {
+  max-height: 220px;
+  overflow-y: auto;
+  backdrop-filter: blur(2px);
+}
+
+.inventory-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #7a6c88;
+}
+
+.inventory-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inventory-empty {
+  color: #4a4054;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.tool-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #1a1520;
+  border: 1px solid #3a2e44;
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: #d8cfc0;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tool-chip:hover:not(.tool-chip-disabled) {
+  border-color: #c9a24a;
+}
+
+.tool-chip-selected {
+  border-color: #c9a24a;
+  background: #2a2018;
+  box-shadow: 0 0 8px rgba(201, 162, 74, 0.4);
+}
+
+.tool-chip-armed {
+  border-color: #4aa2c9;
+  background: #14405a;
+  color: #dff0fa;
+  box-shadow: 0 0 8px rgba(74, 162, 201, 0.4);
+}
+
+.tool-chip-disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.tool-icon {
+  font-size: 15px;
+}
+
+/* Events — a floating overlay pinned to the top-right of the 3D scene, so the
+   scene itself stays full width instead of being squeezed by a docked column. */
+.clue-log {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 260px;
+  max-height: calc(100% - 28px);
+  padding: 12px 16px;
+  background: rgba(10, 8, 14, 0.72);
+  border: 1px solid #2a2233;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-dialogue {
+  font-style: italic;
+  color: #c9a24a;
+  font-size: 13px;
+}
+
+.clue-log-section {
+  min-width: 0;
+}
+
+.clue-log-section-clues {
+  background: rgba(201, 162, 74, 0.08);
+  border: 1px solid rgba(201, 162, 74, 0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.clue-log-section-events .clue-log-title {
+  color: #5a5064;
+}
+
+.clue-log-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #7a6c88;
+  margin-bottom: 5px;
+}
+
+.clue-log-section-clues .clue-log-title {
+  color: #c9a24a;
+  font-weight: bold;
+}
+
+.clue-log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+.clue-log-item {
+  padding: 3px 0;
+  color: #b8aec0;
+  display: flex;
+  gap: 6px;
+  border-top: 1px solid #1c1722;
+}
+
+.clue-log-item:first-child {
+  border-top: none;
+}
+
+.clue-log-section-clues .clue-log-item {
+  color: #e8dcc0;
+  animation: clueFlashIn 1.8s ease-out;
+}
+
+@keyframes clueFlashIn {
+  0% {
+    background: rgba(201, 162, 74, 0.55);
+    box-shadow: 0 0 10px rgba(201, 162, 74, 0.5);
+  }
+  100% {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+.clue-log-empty {
+  color: #4a4054;
+  font-style: italic;
+}
+
+/* Tool-targeting hint — a corner card above Your Tools, not a bottom bar */
+.targeting-hint {
+  padding: 10px 12px;
+  background: rgba(201, 162, 74, 0.12);
+  border: 1px solid #c9a24a;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+  animation: targetingPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes targetingPulse {
+  0%, 100% { background: rgba(201, 162, 74, 0.08); }
+  50% { background: rgba(201, 162, 74, 0.2); }
+}
+
+.targeting-hint-tool {
+  font-size: 13px;
+  color: #c9a24a;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.targeting-hint-text {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #f0e6d2;
+}
+
+.targeting-hint-cancel {
+  padding: 5px 14px;
+  font-size: 12px;
+}
+
+.action-btn {
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  padding: 8px 18px;
+  border-radius: 5px;
+  border: 1px solid #c9a24a;
+  background: transparent;
+  color: #c9a24a;
+  cursor: pointer;
+}
+
+.action-btn:hover {
+  background: rgba(201, 162, 74, 0.12);
+}
+
+.action-btn-secondary {
+  border-color: #4a3e58;
+  color: #b8aec0;
+}
+
+.action-btn-drink {
+  background: #6a1414;
+  border-color: #b8264a;
+  color: #f0e6d2;
+}
+
+.action-btn-drink:hover {
+  background: #8a1a1a;
+}
+
+.action-btn-antidote-on {
+  background: #14405a;
+  border-color: #4aa2c9;
+  color: #dff0fa;
+}
+
+/* Drink confirmation dialog — a centered modal, not the bottom bar */
+.drink-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 3, 6, 0.55);
+}
+
+.drink-dialog {
+  background: #16121a;
+  border: 1px solid #b8264a;
+  border-radius: 10px;
+  padding: 26px 32px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(184, 38, 74, 0.25);
+  max-width: 340px;
+}
+
+.drink-dialog-title {
+  font-size: 24px;
+  color: #f0e6d2;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.drink-dialog-subtitle {
+  color: #9a8ca8;
+  font-size: 13px;
+  margin: 0 0 20px;
+}
+
+.drink-dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Overlays */
+.overlay-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: rgba(6, 4, 8, 0.92);
+  text-align: center;
+}
+
+.overlay-screen-light {
+  background: rgba(6, 4, 8, 0.8);
+}
+
+.overlay-title {
+  font-size: 40px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.overlay-victory {
+  color: #c9a24a;
+  text-shadow: 0 0 24px rgba(201, 162, 74, 0.5);
+}
+
+.overlay-defeat {
+  color: #b8264a;
+  text-shadow: 0 0 24px rgba(184, 38, 74, 0.5);
+}
+
+.overlay-round {
+  color: #d8cfc0;
+  font-size: 28px;
+}
+
+.overlay-subtitle {
+  color: #9a8ca8;
+  max-width: 420px;
+  font-size: 14px;
+  line-height: 1.6;
+}
