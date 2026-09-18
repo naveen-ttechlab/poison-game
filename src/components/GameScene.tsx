@@ -159,7 +159,7 @@ function SceneContent({ onRevealMoment }: SceneContentProps) {
       <Opponent3D
         isThinking={state.currentPlayer === 'ai' && state.phase !== 'drinking'}
         isSpeaking={Boolean(state.aiDialogue)}
-        isDrinking={drinker === 'ai' && (drinkStage === 'tilting' || drinkStage === 'revealed')}
+        isDrinking={drinker !== null && drinker !== myRole && (drinkStage === 'tilting' || drinkStage === 'revealed')}
       />
       {state.cups.map((cup) => {
         const [x, z] = cupPosition(cup.positionIndex);
@@ -176,6 +176,7 @@ function SceneContent({ onRevealMoment }: SceneContentProps) {
             isDrinkingCup={cup.id === drinkingCupId}
             drinkStage={cup.id === drinkingCupId ? drinkStage : 'idle'}
             drinker={drinker}
+            myRole={myRole}
             wasPoison={wasPoison}
             onHoverChange={setHoveredCupId}
             onClick={handleClick}

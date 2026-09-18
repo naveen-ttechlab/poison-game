@@ -18,6 +18,7 @@ export interface Cup3DProps {
   isDrinkingCup: boolean;
   drinkStage: DrinkStage;
   drinker: PlayerId | null;
+  myRole: PlayerId;
   wasPoison: boolean;
   onHoverChange: (id: string | null) => void;
   onClick: (id: string) => void;
@@ -40,6 +41,7 @@ export function Cup3D({
   isDrinkingCup,
   drinkStage,
   drinker,
+  myRole,
   wasPoison,
   onHoverChange,
   onClick,
@@ -72,9 +74,10 @@ export function Cup3D({
         jitterZ = Math.cos(t * 1.3) * 0.035;
       } else {
         // Lift the cup and tilt its rim toward whoever is actually drinking — toward
-        // the camera (+Z) for the player, toward the opponent's seat (-Z) for the AI
-        // — instead of always animating toward the viewer regardless of drinker.
-        const towardDrinker = drinker === 'ai' ? -1 : 1;
+        // the camera (+Z) for whoever is viewing this screen, toward the opponent's
+        // seat (-Z) for the other player — instead of always animating toward the
+        // viewer regardless of drinker.
+        const towardDrinker = drinker !== null && drinker !== myRole ? -1 : 1;
         targetRotX = 0.65 * towardDrinker;
         targetY = 0.32;
         targetZOffset = 0.3 * towardDrinker;
